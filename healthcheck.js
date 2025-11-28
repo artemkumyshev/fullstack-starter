@@ -8,10 +8,10 @@
 const http = require('http');
 
 const options = {
-  host: 'localhost',
+  host: process.env.HOST || 'localhost',
   port: process.env.PORT || 3000,
-  path: '/health',
-  timeout: 2000,
+  path: process.env.HEALTH_CHECK_PATH || '/health',
+  timeout: parseInt(process.env.HEALTH_CHECK_TIMEOUT || '2000', 10),
   method: 'GET'
 };
 

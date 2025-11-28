@@ -94,8 +94,11 @@ FROM nginx:alpine AS frontend-production
 # Copy built frontend assets
 COPY --from=frontend-builder /app/frontend/dist /usr/share/nginx/html
 
-# Copy custom nginx configuration
-COPY nginx.conf /etc/nginx/nginx.conf
+# Install envsubst for environment variable substitution
+RUN apk add --no-cache gettext
+
+# Copy nginx configuration template
+COPY nginx.conf.template /etc/nginx/templates/nginx.conf.template
 
 # Create nginx user
 RUN addgroup -g 1001 -S nginx && adduser -S nginx -u 1001 -G nginx

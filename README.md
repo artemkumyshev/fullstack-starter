@@ -75,7 +75,29 @@ npm run install:all
 
 3. **Настройте переменные окружения**
 
-Создайте файлы `.env` в соответствующих директориях:
+Создайте файлы `.env` на основе `.env.example`:
+
+**Корневой .env (для Docker Compose):**
+```bash
+cp .env.example .env
+# Отредактируйте .env и заполните значениями
+```
+
+**backend/.env:**
+```bash
+cd backend
+cp .env.example .env
+# Отредактируйте .env и заполните значениями
+```
+
+**frontend/.env:**
+```bash
+cd frontend
+cp .env.example .env
+# Отредактируйте .env и заполните значениями
+```
+
+Пример минимальной конфигурации:
 
 **backend/.env:**
 ```env
@@ -84,6 +106,7 @@ PORT=3000
 NODE_ENV=development
 JWT_SECRET=your-secret-key-change-in-production
 JWT_EXPIRES_IN=24h
+CORS_ORIGIN=http://localhost:5173
 ```
 
 **frontend/.env:**
@@ -123,24 +146,32 @@ git clone git@github.com:artemkumyshev/fullstack-starter.git
 cd fullstack-starter
 ```
 
-2. **Запустите все сервисы**
+2. **Настройте переменные окружения**
+
+Создайте `.env` файл в корне проекта:
+```bash
+cp .env.example .env
+# Отредактируйте .env и заполните значениями для вашего окружения
+```
+
+3. **Запустите все сервисы**
 ```bash
 docker-compose up -d
 ```
 
-Это запустит:
-- PostgreSQL на порту 5432
-- Backend API на порту 3000
-- Frontend на порту 5173
-- pgAdmin на порту 5050
+Это запустит (порты настраиваются через .env):
+- PostgreSQL на порту 5432 (по умолчанию)
+- Backend API на порту 3000 (по умолчанию)
+- Frontend на порту 5173 (по умолчанию)
+- pgAdmin на порту 5050 (по умолчанию)
 
-3. **Выполните миграции базы данных**
+4. **Выполните миграции базы данных**
 ```bash
 docker-compose exec backend npx prisma migrate dev
 docker-compose exec backend npx prisma generate
 ```
 
-4. **Откройте приложение**
+5. **Откройте приложение**
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:3000
 - API Documentation (Swagger): http://localhost:3000/api/docs
@@ -238,7 +269,7 @@ docker-compose -f docker-compose.prod.yml up -d
 docker-compose -f docker-compose.prod.yml down
 ```
 
-Подробнее о Docker конфигурации смотрите в [DOCKER.md](./DOCKER.md).
+**Важно**: Docker Compose автоматически загружает переменные из корневого `.env` файла. Убедитесь, что вы создали `.env` на основе `.env.example`.
 
 ## 🗄️ База данных
 
@@ -287,8 +318,57 @@ npx prisma studio
 
 ## 🔧 Конфигурация
 
-### Backend (.env)
+### Переменные окружения
 
+Проект использует переменные окружения для настройки всех компонентов. Файлы `.env.example` содержат все доступные переменные с описаниями.
+
+**📖 Полная документация по переменным окружения**: См. [ENV.md](./ENV.md) для детального описания всех переменных.
+
+#### Корневой .env (для Docker Compose)
+
+Используется для настройки всех сервисов в Docker Compose:
+- `DB_NAME`, `DB_USER`, `DB_PASSWORD` - настройки базы данных
+- `BACKEND_PORT`, `FRONTEND_PORT` - порты сервисов
+- `JWT_SECRET`, `JWT_EXPIRES_IN` - настройки JWT
+- `CORS_ORIGIN` - разрешенные источники для CORS
+- `PGADMIN_EMAIL`, `PGADMIN_PASSWORD` - учетные данные pgAdmin
+
+#### Корневой .env (для Docker Compose)
+
+Используется для настройки всех сервисов в Docker Compose. Основные переменные:
+
+```env
+# База данных
+DB_NAME=app_cms
+DB_USER=app_user
+DB_PASSWORD=app_password
+DB_PORT=5432
+
+# Backend
+BACKEND_PORT=3000
+JWT_SECRET=your-secret-key-change-in-production
+JWT_EXPIRES_IN=24h
+CORS_ORIGIN=http://localhost:5173
+
+# Frontend
+FRONTEND_PORT=5173
+VITE_API_BASE_URL=http://localhost:3000
+VITE_APP_TITLE=Fullstack Application
+
+# pgAdmin
+PGADMIN_PORT=5050
+PGADMIN_EMAIL=admin@example.com
+PGADMIN_PASSWORD=admin
+
+# Nginx (для продакшена)
+NGINX_SERVER_NAME=localhost
+NGINX_BACKEND_HOST=backend
+NGINX_BACKEND_PORT=3000
+```
+
+#### Backend (.env)
+
+Основные переменные:
 ```env
 # База данных
 DATABASE_URL="postgresql://user:password@localhost:5432/dbname"
@@ -303,9 +383,24 @@ JWT_EXPIRES_IN=24h
 
 # CORS
 CORS_ORIGIN=http://localhost:5173
+CORS_CREDENTIALS=true
+
+# Swagger
+SWAGGER_TITLE=Fullstack Starter API
+SWAGGER_DESCRIPTION=Fullstack Starter Template API Documentation
+SWAGGER_VERSION=1.0
+SWAGGER_PATH=api/docs
+
+# Health Check
+HEALTH_CHECK_PATH=/health
+
+# Logging
+LOG_LEVEL=debug
 ```
 
-### Frontend (.env)
+#### Frontend (.env)
+
+**Важно**: Vite требует префикс `VITE_` для переменных, доступных в клиентском коде.
 
 ```env
 # API
@@ -313,7 +408,27 @@ VITE_API_BASE_URL=http://localhost:3000
 
 # Приложение
 VITE_APP_TITLE=Fullstack Application
+VITE_APP_VERSION=0.0.1
+VITE_APP_DESCRIPTION=Fullstack Starter Template
+
+# Development Server
+VITE_HOST=localhost
+VITE_PORT=5173
+VITE_STRICT_PORT=false
+
+# Feature Flags
+VITE_ENABLE_ANALYTICS=false
+VITE_ENABLE_DEBUG=true
 ```
+
+**Полный список всех переменных смотрите в соответствующих `.env.example` файлах.**
+
+### Приоритет загрузки переменных окружения
+
+1. **Docker Compose**: Переменные из корневого `.env` файла
+2. **Backend**: Переменные из `backend/.env` (имеют приоритет над Docker Compose)
+3. **Frontend**: Переменные из `frontend/.env` (имеют приоритет над Docker Compose)
+4. **Значения по умолчанию**: Используются, если переменная не задана
 
 ## 📚 API Документация
 

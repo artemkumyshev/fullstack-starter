@@ -51,7 +51,7 @@ http {
 
     server {
         listen 80;
-        server_name ${NGINX_SERVER_NAME:-localhost};
+        server_name ${NGINX_SERVER_NAME};
         root /usr/share/nginx/html;
         index index.html index.htm;
 
@@ -68,7 +68,7 @@ http {
 
         # API proxy (if backend is on same network)
         location /api/ {
-            proxy_pass http://${NGINX_BACKEND_HOST:-backend}:${NGINX_BACKEND_PORT:-3000}/;
+            proxy_pass http://${NGINX_BACKEND_HOST}:${NGINX_BACKEND_PORT}/;
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection 'upgrade';
@@ -88,8 +88,9 @@ http {
 
         # Security.txt
         location /.well-known/security.txt {
-            return 200 "Contact: ${NGINX_SECURITY_CONTACT:-artemkumyshev@gmail.com}\n";
+            return 200 "Contact: ${NGINX_SECURITY_CONTACT}\n";
             add_header Content-Type text/plain;
         }
     }
 }
+

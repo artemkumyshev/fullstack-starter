@@ -17,20 +17,29 @@ async function bootstrap() {
     }),
   );
 
-  // Temporary - allow all origins (for testing only)
+  // CORS Configuration
+  const corsOrigin = configService.get<string>('CORS_ORIGIN', 'http://localhost:5173');
+  const corsCredentials = configService.get<boolean>('CORS_CREDENTIALS', true);
+  
   app.enableCors({
-    origin: true,
-    credentials: true,
+    origin: corsOrigin === '*' ? true : corsOrigin.split(','),
+    credentials: corsCredentials,
   });
 
+  // Swagger Configuration
+  const swaggerTitle = configService.get<string>('SWAGGER_TITLE', 'Fullstack Starter API');
+  const swaggerDescription = configService.get<string>('SWAGGER_DESCRIPTION', 'Fullstack Starter Template API Documentation');
+  const swaggerVersion = configService.get<string>('SWAGGER_VERSION', '1.0');
+  const swaggerPath = configService.get<string>('SWAGGER_PATH', 'api/docs');
+
   const config = new DocumentBuilder()
-    .setTitle('Case Management System')
-    .setDescription('Case Management APIs')
-    .setVersion('1.0')
+    .setTitle(swaggerTitle)
+    .setDescription(swaggerDescription)
+    .setVersion(swaggerVersion)
     .addBearerAuth({ type: 'http', scheme: 'bearer' }, 'jwt')
     .build();
   const doc = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, doc);
+  SwaggerModule.setup(swaggerPath, app, doc);
 
   const port = configService.get<number>('PORT', 3000);
   await app.listen(port);
