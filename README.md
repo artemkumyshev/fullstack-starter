@@ -130,10 +130,9 @@ docker-compose up -d
 
 Это запустит:
 - PostgreSQL на порту 5432
-- Redis на порту 6379
 - Backend API на порту 3000
 - Frontend на порту 5173
-- NATS на порту 4222
+- pgAdmin на порту 5050
 
 3. **Выполните миграции базы данных**
 ```bash
@@ -145,6 +144,7 @@ docker-compose exec backend npx prisma generate
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:3000
 - API Documentation (Swagger): http://localhost:3000/api/docs
+- pgAdmin: http://localhost:5050 (email: admin@example.com, password: admin)
 
 ## 📝 Доступные команды
 
@@ -244,6 +244,29 @@ docker-compose -f docker-compose.prod.yml down
 
 Проект использует Prisma ORM для работы с PostgreSQL. Схема базы данных определена в `backend/prisma/schema.prisma`.
 
+### pgAdmin
+
+В проекте настроен pgAdmin для удобного управления базой данных через веб-интерфейс.
+
+**Доступ к pgAdmin:**
+- URL: http://localhost:5050
+- Email: `admin@example.com`
+- Password: `admin`
+
+**Подключение к базе данных через pgAdmin:**
+
+1. Войдите в pgAdmin используя учетные данные выше
+2. Правой кнопкой мыши на "Servers" → "Register" → "Server"
+3. Заполните вкладку "General":
+   - Name: `Fullstack Starter DB`
+4. Заполните вкладку "Connection":
+   - Host name/address: `database` (для Docker) или `localhost` (для локального подключения)
+   - Port: `5432`
+   - Maintenance database: `app_cms`
+   - Username: `app_user`
+   - Password: `app_password`
+5. Нажмите "Save"
+
 ### Работа с миграциями
 
 ```bash
@@ -280,9 +303,6 @@ JWT_EXPIRES_IN=24h
 
 # CORS
 CORS_ORIGIN=http://localhost:5173
-
-# Redis (опционально)
-REDIS_URL=redis://localhost:6379
 ```
 
 ### Frontend (.env)

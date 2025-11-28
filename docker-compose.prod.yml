@@ -31,28 +31,6 @@ services:
         reservations:
           memory: 512M
 
-  # Redis for caching and sessions
-  redis:
-    image: redis:7-alpine
-    container_name: app-cms-redis-prod
-    restart: always
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
-    volumes:
-      - redis_data:/data
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASSWORD}", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-        reservations:
-          memory: 256M
-
   # Backend API
   backend:
     build:
@@ -64,13 +42,10 @@ services:
     depends_on:
       database:
         condition: service_healthy
-      redis:
-        condition: service_healthy
     environment:
       NODE_ENV: production
       PORT: 3000
       DATABASE_URL: postgresql://${DB_USER:-app_user}:${DB_PASSWORD}@database:5432/${DB_NAME:-app_cms}
-      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-24h}
       CORS_ORIGIN: ${FRONTEND_URL:-http://localhost}
@@ -141,16 +116,27 @@ services:
       timeout: 10s
       retries: 3
 
-  # NATS Messaging
-  nats:
-    image: nats:2.10-alpine
-    container_name: app-cms-nats-prod
+  # pgAdmin - PostgreSQL Administration Tool
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: app-cms-pgadmin-prod
     restart: always
-    command: ["--jetstream", "--http_port", "8222", "--auth", "${NATS_TOKEN}"]
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8222/healthz"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/misc/ping"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -164,7 +150,7 @@ services:
 volumes:
   postgres_data:
     driver: local
-  redis_data:
+  pgadmin_data:
     driver: local
 
 networks:

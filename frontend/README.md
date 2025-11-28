@@ -1,323 +1,279 @@
-# Tazama Case Management System - Frontend
+# Fullstack Starter Template - Frontend
 
-Modern React frontend application for the Tazama Case Management System, built with TypeScript, Vite, and Tailwind CSS.
+Готовый к использованию шаблон frontend приложения для быстрого старта fullstack-проектов. Этот проект создан как переиспользуемый шаблон, включающий современный стек технологий и лучшие практики разработки.
 
-## Quick Start
+## Быстрый старт
 
-### Prerequisites
+### Требования
 
 - Node.js 18+
 - npm 9+
 
-### Installation & Development
+### Установка и разработка
 
 ```bash
-# Install dependencies
+# Установка зависимостей
 npm install
 
-# Start development server
+# Запуск dev сервера
 npm run dev
 
-# Application will be available at http://localhost:5173
+# Приложение будет доступно по адресу http://localhost:5173
 ```
 
-## Architecture
+## Архитектура
 
-### Tech Stack
+### Технологический стек
 
-- **React 19** - Modern UI framework with concurrent features
-- **TypeScript** - Type safety and enhanced developer experience
-- **Vite** - Fast build tool and development server
-- **Tailwind CSS** - Utility-first CSS framework
-- **TanStack Query** - Powerful server state management
-- **React Router DOM** - Client-side routing
-- **React Hot Toast** - Elegant notifications
-- **Heroicons** - Beautiful SVG icons
+- **React 19** - Современный UI фреймворк с concurrent функциями
+- **TypeScript** - Типобезопасность и улучшенный опыт разработки
+- **Vite** - Быстрый инструмент сборки и dev сервер с мгновенным HMR
+- **Tailwind CSS v4** - Utility-first CSS фреймворк для быстрой стилизации
+- **TanStack Query** - Мощное управление серверным состоянием и кэшированием
+- **React Router DOM** - Клиентская маршрутизация для одностраничных приложений
+- **Vitest** - Быстрый фреймворк для тестирования
 
-### Project Structure
+### Структура проекта
 
 ```
 frontend/
 ├── src/
-│   ├── features/           # Feature-based modules
-│   │   ├── alerts/         # Alert management
-│   │   ├── cases/          # Case management
-│   │   ├── auth/           # Authentication
-│   │   └── comments/       # Comment system
-│   ├── shared/             # Shared utilities and components
-│   │   ├── components/     # Reusable UI components
-│   │   ├── hooks/          # Custom React hooks
-│   │   ├── providers/      # Context providers
-│   │   └── services/       # API services
-│   ├── router/             # Route configurations
-│   └── test/               # Test utilities and setup
-├── public/                 # Static assets
-└── src/test/               # Test configurations
+│   ├── app/                 # Главный компонент приложения
+│   ├── shared/              # Общие утилиты и компоненты
+│   │   ├── components/      # Переиспользуемые UI компоненты
+│   │   ├── hooks/           # Пользовательские React хуки
+│   │   ├── providers/       # Context провайдеры
+│   │   └── services/        # API сервисы
+│   ├── main.tsx             # Точка входа
+│   └── index.css            # Глобальные стили
+├── public/                  # Статические ресурсы
+├── Dockerfile               # Docker образ для frontend
+├── package.json
+├── vite.config.ts           # Конфигурация Vite
+└── tailwind.config.js       # Конфигурация Tailwind CSS
 ```
 
-## Testing Strategy
+## Разработка
 
-### Test Coverage
-
-- **Unit Tests**: Hook functionality, component behavior
-- **Integration Tests**: Provider interactions, API mocking
-- **Accessibility Tests**: Keyboard navigation, screen readers
-- **Performance Tests**: Virtual scrolling, large datasets
-
-### Running Tests
+### Доступные скрипты
 
 ```bash
-# Watch mode - recommended for development
-npm run test
+# Разработка
+npm run dev              # Запуск dev сервера с hot reload
+npm run build            # Сборка для продакшена
+npm run preview          # Предпросмотр продакшен сборки локально
 
-# Single run - for CI/CD
-npm run test:run
+# Качество кода
+npm run lint             # Проверка проблем линтинга
 
-# Visual test UI - interactive test interface
-npm run test:ui
-
-# Coverage report - generates detailed coverage analysis
-npm run test:coverage
-
-# Watch mode with specific pattern
-npm run test:watch
+# Тестирование
+npm run test             # Интерактивный test runner (watch mode)
+npm run test:run         # Одноразовый запуск тестов
+npm run test:ui          # Визуальный интерфейс тестов
+npm run test:coverage    # Генерация отчетов покрытия
 ```
 
-### Test Utilities
+### Конфигурация окружения
 
-The project includes comprehensive test utilities:
+Создайте файл `.env` в директории `frontend/`:
 
-- **Mock Providers**: Pre-configured providers for testing
-- **Test Data**: Realistic test data generators
-- **Custom Matchers**: Domain-specific test assertions
-- **API Mocking**: MSW (Mock Service Worker) setup
-
-## Key Features
-
-### Alert Management
-
-- **Real-time Dashboard**: Live updates of incoming alerts
-- **Advanced Filtering**: Source, priority, time range, and custom filters
-- **Risk Analysis**: Detailed risk scoring and breakdown
-- **Manual Triage**: Human-in-the-loop decision making
-- **Bulk Operations**: Efficient handling of multiple alerts
-
-### Case Investigation
-
-- **Case Creation**: Convert alerts to investigation cases
-- **Workflow Management**: Track investigation progress
-- **Document Management**: Attach evidence and documentation
-- **Collaboration**: Team-based investigation tools
-- **Timeline View**: Chronological case progression
-
-### User Experience
-
-- **Responsive Design**: Mobile-first, works on all devices
-- **Keyboard Navigation**: Full accessibility support
-- **Progressive Loading**: Smooth data loading states
-
-## Development
-
-### Available Scripts
-
-```bash
-# Development
-npm run dev              # Start development server with hot reload
-npm run build            # Build for production
-npm run preview          # Preview production build locally
-
-# Code Quality
-npm run lint             # Check linting issues
-npm run type-check       # TypeScript type checking
-
-# Testing
-npm run test             # Interactive test runner
-npm run test:run         # Single test run
-npm run test:ui          # Visual test interface
-npm run test:coverage    # Generate coverage reports
-```
-
-### Environment Configuration
-
-Create a `.env` file based on `.env.example`:
-
-```bash
+```env
 # API Configuration
 VITE_API_BASE_URL=http://localhost:3000
-VITE_APP_NAME=Tazama Case Management System
-VITE_APP_VERSION=0.0.1
 
-# Feature Flags (optional)
-VITE_ENABLE_ANALYTICS=false
-VITE_ENABLE_DEBUG=true
+# Приложение
+VITE_APP_TITLE=Fullstack Application
 ```
 
-### Code Style
+### Стиль кода
 
-The project follows these conventions:
+Проект следует этим соглашениям:
 
-- **TypeScript Strict Mode**: Enhanced type safety
-- **ESLint Configuration**: Automated code quality checks
-- **Prettier Integration**: Consistent code formatting
-- **Import Organization**: Structured import statements
-- **Component Patterns**: Consistent React patterns
+- **TypeScript Strict Mode**: Улучшенная типобезопасность
+- **ESLint Configuration**: Автоматические проверки качества кода
+- **Prettier Integration**: Последовательное форматирование кода
+- **Import Organization**: Структурированные импорты
+- **Component Patterns**: Последовательные React паттерны
 
-## Styling
+## Стилизация
 
-### Tailwind CSS
+### Tailwind CSS v4
 
-The project uses Tailwind CSS v4 for styling:
+Проект использует Tailwind CSS v4 для стилизации:
 
-- **Utility-First**: Rapid UI development
-- **Design System**: Consistent spacing, colors, and typography
-- **Responsive Design**: Mobile-first approach
-- **Dark Mode**: Built-in theme support
-- **Custom Components**: Reusable component library
+- **Utility-First**: Быстрая разработка UI
+- **Design System**: Последовательные отступы, цвета и типографика
+- **Адаптивный дизайн**: Mobile-first подход
+- **Темная тема**: Встроенная поддержка тем через CSS переменные
+- **Пользовательские компоненты**: Библиотека переиспользуемых компонентов
 
-### Component Library
+### Библиотека компонентов
 
-Shared components include:
+Шаблон включает базовую структуру для создания компонентов:
 
-- **Forms**: Input fields, selectors, validation
-- **Navigation**: Breadcrumbs, pagination, menus
-- **Data Display**: Tables, cards, lists
-- **Feedback**: Loading states, error boundaries, notifications
-- **Layout**: Containers, grids, responsive layouts
+- **Формы**: Поля ввода, селекторы, валидация
+- **Навигация**: Хлебные крошки, пагинация, меню
+- **Отображение данных**: Таблицы, карточки, списки
+- **Обратная связь**: Состояния загрузки, error boundaries, уведомления
+- **Макет**: Контейнеры, сетки, адаптивные макеты
 
-## API Integration
+## Интеграция с API
 
 ### TanStack Query
 
-Server state management with:
+Управление серверным состоянием с:
 
-- **Caching**: Intelligent data caching
-- **Background Updates**: Automatic data synchronization
-- **Optimistic Updates**: Instant UI feedback
-- **Error Handling**: Comprehensive error management
-- **Pagination**: Efficient data loading
+- **Кэширование**: Интеллектуальное кэширование данных
+- **Фоновые обновления**: Автоматическая синхронизация данных
+- **Оптимистичные обновления**: Мгновенная обратная связь UI
+- **Обработка ошибок**: Комплексное управление ошибками
+- **Пагинация**: Эффективная загрузка данных
 
-### API Services
+### API Сервисы
 
-Structured API layer:
+Структурированный слой API для взаимодействия с backend:
 
 ```typescript
-// Example service structure
-class TriageService {
-  async getAlerts(filters: AlertsFilter): Promise<AlertsResponse>
-  async getAlertById(id: string): Promise<Alert>
-  async performManualTriage(data: ManualTriageDto): Promise<void>
+// Пример структуры сервиса
+class ApiService {
+  async getData<T>(endpoint: string): Promise<T>
+  async postData<T>(endpoint: string, data: unknown): Promise<T>
+  async updateData<T>(endpoint: string, id: string, data: unknown): Promise<T>
+  async deleteData(endpoint: string, id: string): Promise<void>
 }
 ```
 
-### Error Handling
+### Обработка ошибок
 
-- **Global Error Boundary**: Catches unexpected errors
-- **API Error Handling**: Structured error responses
-- **Validation Errors**: Real-time form validation
-- **Network Errors**: Offline/connectivity handling
+- **Global Error Boundary**: Перехватывает неожиданные ошибки
+- **API Error Handling**: Структурированные ответы об ошибках
+- **Validation Errors**: Валидация форм в реальном времени
+- **Network Errors**: Обработка офлайн/подключения
 
-## Performance
+## Производительность
 
-### Optimization Strategies
+### Стратегии оптимизации
 
-- **Code Splitting**: Lazy-loaded route components
-- **Virtual Scrolling**: Efficient large dataset rendering
-- **Memoization**: Optimized re-rendering
-- **Image Optimization**: Responsive images with lazy loading
-- **Bundle Analysis**: Regular bundle size monitoring
+- **Code Splitting**: Ленивая загрузка компонентов маршрутов
+- **Virtual Scrolling**: Эффективный рендеринг больших наборов данных
+- **Мемоизация**: Оптимизированный ре-рендеринг с React.memo и useMemo
+- **Оптимизация изображений**: Адаптивные изображения с ленивой загрузкой
+- **Bundle Analysis**: Регулярный мониторинг размера бандла
 
-### Performance Monitoring
+### Мониторинг производительности
 
-- **Core Web Vitals**: Performance metrics tracking
-- **Error Monitoring**: Real-time error reporting
-- **User Analytics**: Usage pattern analysis
+- **Core Web Vitals**: Отслеживание метрик производительности
+- **Error Monitoring**: Отчетность об ошибках в реальном времени
+- **User Analytics**: Анализ паттернов использования (опционально)
 
-## Accessibility
+## Тестирование
 
-### Standards Compliance
+### Стратегия тестирования
 
-- **WCAG 2.1 AA**: Accessibility guidelines compliance
-- **Keyboard Navigation**: Full keyboard support
-- **Screen Readers**: Semantic HTML and ARIA labels
-- **Color Contrast**: High contrast ratios
-- **Focus Management**: Logical tab order
+- **Unit тесты**: Функциональность хуков, поведение компонентов
+- **Интеграционные тесты**: Взаимодействие провайдеров, мокирование API
+- **Тесты доступности**: Навигация с клавиатуры, поддержка screen readers
+- **Тесты производительности**: Виртуальная прокрутка, большие наборы данных
 
-### Testing
+### Запуск тестов
 
-- **Automated Testing**: axe-core integration
-- **Manual Testing**: Keyboard and screen reader testing
-- **User Testing**: Regular accessibility audits
+```bash
+# Watch mode - рекомендуется для разработки
+npm run test
 
-## Deployment
+# Single run - для CI/CD
+npm run test:run
 
-### Build Process
+# Visual test UI - интерактивный интерфейс тестов
+npm run test:ui
+
+# Coverage report - генерирует детальный анализ покрытия
+npm run test:coverage
+```
+
+### Утилиты для тестирования
+
+Проект включает базовую настройку для тестирования:
+
+- **Testing Library**: React Testing Library для тестирования компонентов
+- **MSW (Mock Service Worker)**: Мокирование API запросов
+- **Vitest**: Быстрый test runner на основе Vite
+
+## Доступность
+
+### Соответствие стандартам
+
+- **WCAG 2.1 AA**: Соответствие руководящим принципам доступности
+- **Навигация с клавиатуры**: Полная поддержка клавиатуры
+- **Screen Readers**: Семантический HTML и ARIA метки
+- **Контрастность цветов**: Высокие коэффициенты контрастности
+- **Управление фокусом**: Логический порядок табуляции
+
+## Развертывание
+
+### Процесс сборки
 
 ```bash
 # Production build
 npm run build
 
-# Build outputs to dist/ directory
-# Optimized for modern browsers
-# Tree-shaken and minified
+# Результаты сборки в директории dist/
+# Оптимизировано для современных браузеров
+# Tree-shaken и минифицировано
 ```
 
-### Deployment Targets
+### Целевые платформы развертывания
 
-- **Static Hosting**: Netlify, Vercel, GitHub Pages
-- **CDN Distribution**: CloudFront, CloudFlare
-- **Container Deployment**: Docker with nginx
-- **Traditional Hosting**: Apache, nginx
+- **Статический хостинг**: Netlify, Vercel, GitHub Pages
+- **CDN распределение**: CloudFront, CloudFlare
+- **Контейнерное развертывание**: Docker с nginx
+- **Традиционный хостинг**: Apache, nginx
 
-### Environment Variables
+### Переменные окружения для продакшена
 
-Production environment setup:
-
-```bash
+```env
 VITE_API_BASE_URL=https://api.yourdomain.com
-VITE_APP_NAME=Tazama Case Management System
-VITE_APP_VERSION=1.0.0
-VITE_ENABLE_ANALYTICS=true
+VITE_APP_TITLE=Your Application Name
 ```
 
-## Contributing
+## Использование как шаблона
 
-### Development Workflow
+Этот frontend шаблон создан для переиспользования. Чтобы адаптировать его под ваш проект:
 
-1. **Feature Development**: Create feature branches
-2. **Code Review**: Pull request process
-3. **Testing**: Comprehensive test coverage
-4. **Documentation**: Update relevant documentation
+1. **Обновите метаданные**
+   - Измените `name` в `package.json`
+   - Обновите `description` и `author`
 
-### Guidelines
+2. **Настройте переменные окружения**
+   - Создайте `.env` файл с вашими настройками
+   - Обновите `VITE_API_BASE_URL` на адрес вашего backend
 
-- **TypeScript**: Strict typing for all code
-- **Testing**: Write tests for new features
-- **Accessibility**: Ensure accessible implementations
-- **Performance**: Consider performance impact
-- **Documentation**: Keep documentation updated
+3. **Настройте стили**
+   - Отредактируйте `src/app/index.css` для кастомизации темы
+   - Настройте Tailwind CSS в `tailwind.config.js`
 
-### Git Hooks
+4. **Начните разработку!**
+   - Создайте свои компоненты в `src/shared/components/`
+   - Добавьте API сервисы в `src/shared/services/`
+   - Настройте маршрутизацию
 
-The project includes pre-commit hooks:
+## Ресурсы
 
-- **Linting**: ESLint checks
-- **Type Checking**: TypeScript validation
-- **Testing**: Run affected tests
-- **Formatting**: Prettier formatting
-
-## Resources
-
-### Documentation
+### Документация
 
 - [React Documentation](https://react.dev/)
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/)
 - [Tailwind CSS Docs](https://tailwindcss.com/docs)
 - [TanStack Query Docs](https://tanstack.com/query/latest)
 - [Vite Guide](https://vitejs.dev/guide/)
+- [Vitest Docs](https://vitest.dev/)
 
-### Development Tools
+### Инструменты разработки
 
-- **VS Code Extensions**: Recommended extensions list
-- **Browser DevTools**: React and Redux DevTools
-- **Design Tools**: Figma integration
-- **API Tools**: Postman collections
+- **VS Code Extensions**: Рекомендуемые расширения для React/TypeScript
+- **Browser DevTools**: React DevTools для отладки
+- **Vite DevTools**: Встроенные инструменты разработки Vite
+
+---
+
+**Примечание**: Этот шаблон создан для быстрого старта новых проектов. Не забудьте настроить все переменные окружения и обновить метаданные проекта перед использованием в продакшене.
