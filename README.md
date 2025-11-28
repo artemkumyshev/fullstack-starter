@@ -1,355 +1,436 @@
-# Tazama Case and Investigation Management System
+# Fullstack Starter Template
 
-Tazama Case and Investigation Management System is a comprehensive solution for managing cases and investigations efficiently. This project aims to streamline workflows, improve collaboration, and provide robust tools for tracking, reporting, and analyzing case data.
+Готовый к использованию шаблон для быстрого старта fullstack-приложений. Этот проект создан как переиспользуемый шаблон для новых проектов, включающий современный стек технологий и лучшие практики разработки.
 
-## Architecture
+## 🚀 Особенности
 
-This is a monorepo containing:
-- **Frontend**: React + TypeScript + Vite application with Tailwind CSS
-- **Backend**: NestJS + TypeScript API with PostgreSQL database
-- **Authentication**: Keycloak-based authentication with JWT tokens
+- **Monorepo структура** с npm workspaces для управления зависимостями
+- **Frontend**: React 19 + TypeScript + Vite с Tailwind CSS
+- **Backend**: NestJS + TypeScript + Prisma ORM
+- **База данных**: PostgreSQL с миграциями Prisma
+- **Docker**: Полная контейнеризация для разработки и продакшена
+- **Code Quality**: ESLint, Prettier, Husky для pre-commit хуков
+- **API Documentation**: Swagger/OpenAPI интеграция
 
----
+## 📋 Требования
 
-## Quick Start
+- **Node.js** >= 18.0.0
+- **npm** >= 9.0.0
+- **Docker** и **Docker Compose** (опционально, для контейнеризации)
+- **PostgreSQL** (если запускаете локально без Docker)
 
-### Prerequisites
-- Node.js 18+ 
-- npm 9+
-- PostgreSQL database
-- Keycloak server (for authentication)
+## 🏗️ Архитектура
 
-### 1. Clone the Repository
-```bash
-git clone https://github.com/tazama-lf/case-management-system.git
-cd case-management-system
+Проект организован как monorepo с разделением на frontend и backend:
+
+```
+fullstack-starter/
+├── backend/              # NestJS API сервер
+│   ├── src/              # Исходный код
+│   ├── prisma/           # Схема базы данных и миграции
+│   └── Dockerfile        # Docker образ для backend
+├── frontend/             # React приложение
+│   ├── src/              # Исходный код
+│   ├── public/           # Статические файлы
+│   └── Dockerfile        # Docker образ для frontend
+├── docker-compose.yml    # Docker Compose для разработки
+├── docker-compose.prod.yml # Docker Compose для продакшена
+└── package.json          # Корневой package.json с workspace скриптами
 ```
 
-### 2. Install Dependencies
+### Технологический стек
+
+#### Frontend
+- **React 19** - Современная библиотека для построения пользовательских интерфейсов
+- **TypeScript** - Типизированный JavaScript для повышения надежности кода
+- **Vite** - Быстрый инструмент сборки с мгновенным HMR
+- **Tailwind CSS** - Utility-first CSS фреймворк для быстрой стилизации
+- **TanStack Query** - Управление серверным состоянием и кэшированием
+- **React Router** - Маршрутизация для одностраничных приложений
+- **Vitest** - Быстрый фреймворк для тестирования
+
+#### Backend
+- **NestJS** - Прогрессивный Node.js фреймворк для построения эффективных и масштабируемых серверных приложений
+- **TypeScript** - Типизированный JavaScript
+- **Prisma** - Современный ORM для работы с базой данных
+- **PostgreSQL** - Реляционная база данных
+- **Swagger/OpenAPI** - Автоматическая генерация API документации
+- **JWT** - Аутентификация на основе токенов
+- **Jest** - Фреймворк для тестирования
+
+## 🚀 Быстрый старт
+
+### Вариант 1: Локальная разработка (без Docker)
+
+1. **Клонируйте репозиторий**
 ```bash
-# Install all dependencies (root, frontend, and backend)
+git clone git@github.com:artemkumyshev/fullstack-starter.git
+cd fullstack-starter
+```
+
+2. **Установите зависимости**
+```bash
 npm run install:all
 ```
 
-### 3. Environment Setup
-```bash
-# Copy environment examples
-cp backend/.env.example backend/.env
-cp frontend/.env.example frontend/.env
+3. **Настройте переменные окружения**
 
-# Edit the environment files with your configurations
-# backend/.env - Configure database, auth, and services
-# frontend/.env - Configure API endpoints
+Создайте файлы `.env` в соответствующих директориях:
+
+**backend/.env:**
+```env
+DATABASE_URL="postgresql://username:password@localhost:5432/database_name"
+PORT=3000
+NODE_ENV=development
+JWT_SECRET=your-secret-key-change-in-production
+JWT_EXPIRES_IN=24h
 ```
 
-### 4. Database Setup
+**frontend/.env:**
+```env
+VITE_API_BASE_URL=http://localhost:3000
+VITE_APP_TITLE=Fullstack Application
+```
+
+4. **Настройте базу данных**
+
+Убедитесь, что PostgreSQL запущен, затем выполните миграции:
+
 ```bash
-# Navigate to backend and run migrations
 cd backend
 npx prisma migrate dev
 npx prisma generate
 ```
 
-### 5. Start Development Servers
+5. **Запустите приложение**
+
+Из корневой директории:
 ```bash
-# From root directory - starts both frontend and backend
 npm run dev
-
-# Or start individually:
-npm run dev:backend   # Backend at http://localhost:3000
-npm run dev:frontend  # Frontend at http://localhost:5173
 ```
 
----
-
-# Authentication Flow
-
-## Overview
-
-This project uses a secure, centralized authentication flow leveraging Keycloak, the Tazama Auth Service, and JWT-based authorization in the CMS backend.
-
-## Authentication Sequence Diagram
-
-```mermaid
-sequenceDiagram
-    participant User as User (Frontend/API Client)
-    participant AuthService as Tazama Auth Service
-    participant Keycloak as Keycloak
-    participant CMS as CMS Backend
-
-    User->>AuthService: 1. POST /v1/auth/login (username, password)
-    AuthService->>Keycloak: 2. Validate credentials
-    alt Invalid credentials
-        Keycloak-->>AuthService: Error (invalid)
-        AuthService-->>User: 401 Unauthorized
-    else Valid credentials
-        Keycloak-->>AuthService: Success (user info)
-        AuthService-->>User: 3. JWT Token (Tazama format)
-        User->>CMS: 4. API Request with Authorization: Bearer <JWT>
-        CMS->>CMS: 5. Verify JWT (using public key)
-        CMS->>CMS: 6. Extract claims (role, permissions, tenantId)
-        CMS->>CMS: 7. Enforce RBAC, tenant isolation, audit logging
-        CMS-->>User: 8. Response (data or error)
-    end
-```
-
----
-
-## Project Structure
-
-```
-case-management-system/
-├── backend/                 # NestJS API server
-│   ├── src/                 # Source code
-│   ├── prisma/              # Database schema and migrations
-│   ├── test/                # Backend tests
-│   └── .env.example         # Environment variables template
-├── frontend/                # React frontend application
-│   ├── src/                 # Source code
-│   ├── public/              # Static assets
-│   └── .env.example         # Environment variables template
-├── docker-compose.yml       # Docker services configuration
-└── package.json             # Monorepo scripts and dependencies
-```
-
----
-
-## Development Commands
-
-### Monorepo Commands (from root)
+Или запустите отдельно:
 ```bash
-# Development
-npm run dev                  # Start both frontend and backend
-npm run dev:backend          # Start only backend
-npm run dev:frontend         # Start only frontend
-
-# Building
-npm run build               # Build both applications
-npm run build:backend       # Build backend only
-npm run build:frontend      # Build frontend only
-
-# Testing
-npm run test               # Run all tests
-npm run test:backend       # Run backend tests
-npm run test:frontend      # Run frontend tests
-
-# Linting
-npm run lint               # Lint both applications
-npm run lint:backend       # Lint backend only
-npm run lint:frontend      # Lint frontend only
-
-# Installation
-npm run install:all        # Install all dependencies
-npm run install:backend    # Install backend dependencies
-npm run install:frontend   # Install frontend dependencies
+npm run dev:backend   # Backend на http://localhost:3000
+npm run dev:frontend  # Frontend на http://localhost:5173
 ```
 
+### Вариант 2: Разработка с Docker
+
+1. **Клонируйте репозиторий**
+```bash
+git clone git@github.com:artemkumyshev/fullstack-starter.git
+cd fullstack-starter
 ```
 
-### Backend Commands (from backend/)
+2. **Запустите все сервисы**
+```bash
+docker-compose up -d
+```
+
+Это запустит:
+- PostgreSQL на порту 5432
+- Redis на порту 6379
+- Backend API на порту 3000
+- Frontend на порту 5173
+- NATS на порту 4222
+
+3. **Выполните миграции базы данных**
+```bash
+docker-compose exec backend npx prisma migrate dev
+docker-compose exec backend npx prisma generate
+```
+
+4. **Откройте приложение**
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:3000
+- API Documentation (Swagger): http://localhost:3000/api/docs
+
+## 📝 Доступные команды
+
+### Корневые команды (monorepo)
+
+#### Разработка
+```bash
+npm run dev                  # Запустить frontend и backend одновременно
+npm run dev:backend          # Запустить только backend
+npm run dev:frontend         # Запустить только frontend
+```
+
+#### Сборка
+```bash
+npm run build                # Собрать оба приложения
+npm run build:backend       # Собрать только backend
+npm run build:frontend      # Собрать только frontend
+```
+
+#### Линтинг
+```bash
+npm run lint                # Проверить код в обоих приложениях
+npm run lint:backend        # Проверить только backend
+npm run lint:frontend       # Проверить только frontend
+```
+
+#### Установка зависимостей
+```bash
+npm run install:all         # Установить все зависимости
+npm run install:backend    # Установить зависимости backend
+npm run install:frontend   # Установить зависимости frontend
+```
+
+### Backend команды (из директории backend/)
 
 ```bash
-# Development
-npm run start:dev          # Start with hot reload
-npm run start:debug        # Start with debugging
-npm run start:prod         # Production mode
+# Разработка
+npm run start:dev          # Запуск с hot reload
+npm run start:debug        # Запуск с отладкой
+npm run start:prod         # Продакшен режим
 
-# Database
-npx prisma migrate dev     # Run migrations
-npx prisma generate        # Generate Prisma client
-npx prisma studio          # Open database GUI
+# База данных
+npx prisma migrate dev     # Применить миграции
+npx prisma generate        # Сгенерировать Prisma Client
+npx prisma studio          # Открыть Prisma Studio (GUI для БД)
 
-# Testing
-npm run test              # Unit tests
-npm run test:watch        # Unit tests in watch mode
-npm run test:e2e          # End-to-end tests
-npm run test:cov          # Test coverage
-
-# Linting & Formatting
-npm run lint              # Check linting
-npm run fix               # Fix linting issues
-npm run format            # Format code
+# Качество кода
+npm run lint               # Проверить код
+npm run fix                # Исправить проблемы линтинга
+npm run format             # Форматировать код
 ```
 
-### Frontend Commands (from frontend/)
+### Frontend команды (из директории frontend/)
 
 ```bash
-# Development
-npm run dev               # Start development server
-npm run build             # Build for production
-npm run preview           # Preview production build
+# Разработка
+npm run dev                # Запустить dev сервер
+npm run build              # Собрать для продакшена
+npm run preview            # Предпросмотр продакшен сборки
 
-# Testing
-npm run test              # Run tests in watch mode
-npm run test:run          # Run tests once
-npm run test:ui           # Visual test interface
-npm run test:coverage     # Generate coverage report
-
-# Linting
-npm run lint              # Check linting issues
+# Линтинг
+npm run lint               # Проверить код
 ```
 
----
+## 🐳 Docker
 
-## Testing
-
-### Backend Testing
-- **Unit Tests**: Jest-based tests for services, controllers, and utilities
-- **E2E Tests**: Full application testing with test database
-- **Coverage Reports**: Comprehensive test coverage analysis
-
-### Frontend Testing
-- **Unit Tests**: Vitest for component and hook testing
-- **Integration Tests**: API integration and provider testing
-- **Accessibility Tests**: Keyboard navigation and screen reader support
-- **Performance Tests**: Virtual scrolling and large dataset handling
-
----
-
-## Deployment
-
-### Environment Variables
-
-#### Backend (.env)
-```bash
-# Database
-DATABASE_URL="postgresql://username:password@localhost:5432/database"
-
-# Authentication
-TAZAMA_AUTH_URL=http://localhost:3020/v1/auth/login
-AUTH_PUBLIC_KEY_PATH=public-key.pem
-
-# Alert Configuration
-TRIAGE_TYPE=MANUAL                    # AI, MANUAL, or DISABLED
-CONFIDENCE_THRESHOLD=95
-CLIENT_SYSTEM_INTERDICTION_ENABLED=true
-
-# NATS Messaging
-SERVER_URL=nats://localhost:4222
-NODE_ENV=production
-```
-
-#### Frontend (.env)
-```bash
-# API Configuration
-VITE_API_BASE_URL=http://localhost:3000
-VITE_APP_NAME=Tazama Case Management System
-VITE_APP_VERSION=0.0.1
-```
-
-### Docker Deployment
+### Разработка
 
 ```bash
-# Build and start all services
+# Запустить все сервисы
 docker-compose up -d
 
-# Build specific service
-docker-compose build backend
-docker-compose build frontend
-
-# View logs
+# Просмотр логов
 docker-compose logs -f backend
 docker-compose logs -f frontend
+
+# Остановить все сервисы
+docker-compose down
+
+# Пересобрать образы
+docker-compose build --no-cache
 ```
 
----
+### Продакшен
 
-## Contributing
+```bash
+# Запустить продакшен окружение
+docker-compose -f docker-compose.prod.yml up -d
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+# Остановить
+docker-compose -f docker-compose.prod.yml down
+```
 
-### Development Guidelines
-- Follow TypeScript and ESLint configurations
-- Write tests for new features
-- Update documentation for API changes
-- Follow conventional commit messages
+Подробнее о Docker конфигурации смотрите в [DOCKER.md](./DOCKER.md).
 
----
+## 🗄️ База данных
 
-## API Documentation
+Проект использует Prisma ORM для работы с PostgreSQL. Схема базы данных определена в `backend/prisma/schema.prisma`.
 
-The backend API provides RESTful endpoints for:
-- **Authentication**: Login, token refresh, logout
-- **Alerts**: CRUD operations, filtering, manual triage
-- **Cases**: Case management and investigation workflows
-- **Comments**: Add notes and observations to cases
-- **Tasks**: Task assignment and tracking
-- **Audit**: Comprehensive audit logging
+### Работа с миграциями
 
-### Key Endpoints
-- `POST /api/v1/auth/login` - User authentication
-- `GET /api/v1/triage/alerts` - Fetch alerts with filtering
-- `PATCH /api/v1/triage/alerts/:id` - Manual triage
-- `GET /api/v1/cases` - List cases
-- `POST /api/v1/cases` - Create new case
+```bash
+cd backend
 
----
+# Создать новую миграцию
+npx prisma migrate dev --name migration_name
 
-## Security
+# Применить миграции в продакшене
+npx prisma migrate deploy
 
-- **JWT Authentication**: Secure token-based authentication
-- **Role-Based Access Control**: Fine-grained permissions
-- **Tenant Isolation**: Multi-tenant data separation
-- **Audit Logging**: Comprehensive activity tracking
-- **Input Validation**: Request validation and sanitization
+# Сбросить базу данных (только для разработки!)
+npx prisma migrate reset
 
----
+# Просмотр базы данных в GUI
+npx prisma studio
+```
 
-## Features
+## 🔧 Конфигурация
 
-### Alert Management
-- Real-time alert processing and triage
-- Manual and AI-powered decision making
-- Risk scoring and typology analysis
-- Source and time-based filtering
+### Backend (.env)
 
-### Case Investigation
-- Complete case lifecycle management
-- Task assignment and tracking
-- Comment and documentation system
-- Investigation workflow automation
+```env
+# База данных
+DATABASE_URL="postgresql://user:password@localhost:5432/dbname"
 
-### Reporting & Analytics
-- Comprehensive audit trails
-- Performance metrics and analytics
-- Custom reporting capabilities
-- Data export functionality
+# Сервер
+PORT=3000
+NODE_ENV=development
 
----
+# JWT
+JWT_SECRET=your-secret-key-change-in-production
+JWT_EXPIRES_IN=24h
 
-## Technology Stack
+# CORS
+CORS_ORIGIN=http://localhost:5173
 
-### Frontend
-- **React 19** - UI framework
-- **TypeScript** - Type safety
-- **Vite** - Build tool and dev server
-- **Tailwind CSS** - Utility-first styling
-- **TanStack Query** - Server state management
-- **React Router** - Navigation
-- **Vitest** - Testing framework
+# Redis (опционально)
+REDIS_URL=redis://localhost:6379
+```
+
+### Frontend (.env)
+
+```env
+# API
+VITE_API_BASE_URL=http://localhost:3000
+
+# Приложение
+VITE_APP_TITLE=Fullstack Application
+```
+
+## 📚 API Документация
+
+После запуска backend, Swagger документация доступна по адресу:
+- **Development**: http://localhost:3000/api/docs
+
+API использует JWT аутентификацию. Для тестирования защищенных endpoints используйте кнопку "Authorize" в Swagger UI.
+
+## 🧪 Тестирование
 
 ### Backend
-- **NestJS** - Node.js framework
-- **TypeScript** - Type safety
-- **Prisma** - Database ORM
-- **PostgreSQL** - Primary database
-- **JWT** - Authentication tokens
-- **Jest** - Testing framework
 
-### Infrastructure
-- **Docker** - Containerization
-- **NATS** - Message broker
-- **Keycloak** - Identity provider
+```bash
+cd backend
+npm run test              # Запустить unit тесты
+npm run test:watch        # Запустить в watch режиме
+npm run test:e2e          # Запустить E2E тесты
+npm run test:cov          # Покрытие кода тестами
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm run test              # Запустить тесты в watch режиме
+npm run test:run          # Запустить тесты один раз
+npm run test:ui           # Визуальный интерфейс для тестов
+npm run test:coverage     # Покрытие кода тестами
+```
+
+## 🎨 Code Quality
+
+Проект настроен с использованием:
+
+- **ESLint** - Линтинг кода
+- **Prettier** - Форматирование кода
+- **Husky** - Git hooks
+- **lint-staged** - Линтинг только измененных файлов перед коммитом
+
+Все файлы автоматически проверяются и форматируются перед коммитом благодаря pre-commit хукам.
+
+## 📦 Структура проекта
+
+```
+fullstack-starter/
+├── backend/
+│   ├── src/
+│   │   ├── app.module.ts    # Главный модуль приложения
+│   │   └── main.ts          # Точка входа
+│   ├── prisma/
+│   │   └── schema.prisma    # Схема базы данных
+│   ├── Dockerfile
+│   ├── package.json
+│   └── tsconfig.json
+├── frontend/
+│   ├── src/
+│   │   ├── app/
+│   │   │   └── app.tsx      # Главный компонент
+│   │   ├── main.tsx         # Точка входа
+│   │   └── index.css
+│   ├── public/
+│   ├── Dockerfile
+│   ├── package.json
+│   ├── vite.config.ts
+│   └── tailwind.config.js
+├── docker-compose.yml
+├── docker-compose.prod.yml
+├── package.json             # Корневой package.json
+└── README.md
+```
+
+## 🔐 Безопасность
+
+- **JWT аутентификация** - Токен-базированная аутентификация
+- **Валидация входных данных** - Использование class-validator
+- **CORS настройка** - Конфигурируемые CORS политики
+- **Переменные окружения** - Секреты хранятся в .env файлах (не коммитьте их!)
+
+## 🚢 Деплой
+
+### Подготовка к деплою
+
+1. Обновите переменные окружения для продакшена
+2. Соберите приложения:
+```bash
+npm run build
+```
+
+3. Используйте Docker Compose для продакшена:
+```bash
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+### Рекомендации
+
+- Используйте сильные секретные ключи для JWT
+- Настройте правильные CORS политики
+- Используйте HTTPS в продакшене
+- Настройте мониторинг и логирование
+- Регулярно обновляйте зависимости
+
+## 🤝 Использование как шаблона
+
+Этот проект создан как шаблон для переиспользования. Чтобы использовать его в новом проекте:
+
+1. **Клонируйте репозиторий**
+```bash
+git clone git@github.com:artemkumyshev/fullstack-starter.git my-new-project
+cd my-new-project
+```
+
+2. **Обновите метаданные проекта**
+   - Измените `name` в `package.json` (корневой, backend, frontend)
+   - Обновите `description` и `author`
+   - Обновите README.md с описанием вашего проекта
+
+3. **Настройте базу данных**
+   - Отредактируйте `backend/prisma/schema.prisma` под ваши нужды
+   - Выполните миграции
+
+4. **Настройте переменные окружения**
+   - Создайте `.env` файлы на основе примеров
+   - Обновите конфигурацию под ваше окружение
+
+5. **Начните разработку!**
+   - Добавьте свои модули в backend
+   - Создайте компоненты во frontend
+   - Настройте маршрутизацию
+
+## 📄 Лицензия
+
+UNLICENSED
+
+## 👤 Автор
+
+Artem Kumyshev
 
 ---
 
-## Support
-
-For support and questions:
-- Create an issue in the GitHub repository
-- Check the documentation and API guides
-- Review existing issues and discussions
+**Примечание**: Этот шаблон создан для быстрого старта новых проектов. Не забудьте настроить все переменные окружения и обновить метаданные проекта перед использованием в продакшене.
